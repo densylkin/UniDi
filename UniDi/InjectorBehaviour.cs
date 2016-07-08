@@ -15,14 +15,13 @@ namespace UniDi
             Initialize();
             if (Inject)
             {
-                Stopwatch watch = new Stopwatch();
-                watch.Start();
                 Context.Inject();
-                watch.Stop();
-                UnityEngine.Debug.Log(watch.Elapsed);
             }
         }
 
+        /// <summary>
+        /// Method where all dependencies should be registered
+        /// </summary>
         protected virtual void Initialize()
         {
             

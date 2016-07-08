@@ -24,11 +24,22 @@ namespace UniDi
 
         #region Registration
 
+        /// <summary>
+        /// Register implementation only
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
         public DependencyRegistration<T> Register<T>() where T : class, new()
         {
             return Register<T>(string.Empty);
         }
 
+        /// <summary>
+        /// Register implementation only with name
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="name"></param>
+        /// <returns></returns>
         public DependencyRegistration<T> Register<T>(string name) where T : class, new()
         {
             var type = typeof(T);
@@ -52,21 +63,47 @@ namespace UniDi
             return reg;
         }
 
+
+        /// <summary>
+        /// Register instance
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="instance"></param>
         public void Register<T>(T instance) where T : class, new()
         {
             Register<T>(instance, string.Empty);
         }
 
+
+        /// <summary>
+        /// Register instance with name
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="instance"></param>
+        /// <param name="name"></param>
         public void Register<T>(T instance, string name) where T : class, new()
         {
             Register<T>(name).AsInstance(instance);
         }
 
+        /// <summary>
+        /// Register implementation of itnerface
+        /// </summary>
+        /// <typeparam name="IT"></typeparam>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
         public DependencyRegistration<T> Register<IT, T>() where T : class, new()
         {
             return Register<IT, T>(string.Empty);
         }
 
+        /// <summary>
+        /// Register implementation of itnerface with name
+        /// </summary>
+        /// <typeparam name="IT"></typeparam>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="name"></param>
+        /// <returns></returns>
         public DependencyRegistration<T> Register<IT, T>(string name) where T : class, new()
         {
             var interfaceType = typeof(IT);
@@ -97,11 +134,25 @@ namespace UniDi
             return reg;
         }
 
+        /// <summary>
+        /// Register intance of type that implements interface
+        /// </summary>
+        /// <typeparam name="IT"></typeparam>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="instance"></param>
         public void Register<IT, T>(T instance) where T : class, new()
         {
             Register<IT, T>().AsInstance(instance);
         }
 
+
+        /// <summary>
+        /// Register intance of type that implements interface with name
+        /// </summary>
+        /// <typeparam name="IT"></typeparam>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="instance"></param>
+        /// <param name="name"></param>
         public void Register<IT, T>(T instance, string name) where T : class, new()
         {
             Register<IT, T>(name).AsInstance(instance);
@@ -111,11 +162,22 @@ namespace UniDi
 
         #region Resolving
 
+        /// <summary>
+        /// Resolve dependency of type
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
         public object Resolve(Type type)
         {
             return Resolve(type, string.Empty);
         }
 
+        /// <summary>
+        /// Resolve named dependency of type
+        /// </summary>
+        /// <param name="type"></param>
+        /// <param name="name"></param>
+        /// <returns></returns>
         public object Resolve(Type type, string name)
         {
             Dictionary<string, IDependencyRegistration> registrations;
@@ -136,11 +198,22 @@ namespace UniDi
                 throw new ResolvingException("No registrations for " + type + " found.");
         }
 
+        /// <summary>
+        /// Resolve dependency of type
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
         public T Resolve<T>()
         {
             return (T)Resolve(typeof(T));
         }
 
+        /// <summary>
+        /// Resolve named dependency of type
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="name"></param>
+        /// <returns></returns>
         public T Resolve<T>(string name)
         {
             return (T)Resolve(typeof(T), name);
@@ -159,7 +232,8 @@ namespace UniDi
                     return false;
                 else
                 {
-                    _membersCache.Add(t, members);
+                    if(!_membersCache.ContainsKey(t))
+                        _membersCache.Add(t, members);
                     return true;
                 }
             });
@@ -173,7 +247,7 @@ namespace UniDi
                 }
 
                 var members = _membersCache[type];
-                var ctorInfo = members.First(m => m is ConstructorInfo) as ConstructorInfo;
+                var ctorInfo = members.FirstOrDefault(m => m is ConstructorInfo) as ConstructorInfo;
                 object injectable = null;
 
                 if (ctorInfo != null)

@@ -6,3 +6,5 @@ Lightweight IoC container for unity game engine, inspired by TinyIoC
 - comments
 - tests
 - more examples
+
+##Hello world example

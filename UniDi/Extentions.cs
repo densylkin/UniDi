@@ -29,6 +29,11 @@ namespace UniDi
             return member is MethodInfo;
         }
 
+        /// <summary>
+        /// Gets all members of type marked with [Inject] or [Inject("somename")]
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
         public static MemberInfo[] GetMembersToInject(this Type type)
         {
             return type.FindMembers(MemberTypes.All,

@@ -23,6 +23,9 @@ namespace UniDi
         public IProvider Provider { get; private set; }
         public Type GetDependencyType { get { return typeof (T); } }
 
+        /// <summary>
+        /// Singleton
+        /// </summary>
         public void AsSingle()
         {
             if (GetDependencyType.IsComponent() || GetDependencyType.IsMonoBehaviour())
@@ -31,6 +34,9 @@ namespace UniDi
                 Provider = new SingleProvider<T>();
         }
 
+        /// <summary>
+        /// New instance will be created
+        /// </summary>
         public void AsTransient()
         {
             if (GetDependencyType.IsComponent() || GetDependencyType.IsMonoBehaviour())
@@ -59,6 +65,10 @@ namespace UniDi
             Provider = new PrefabProvider<T>(prefab);
         }
 
+        /// <summary>
+        /// Load a resource from "Resources folder"
+        /// </summary>
+        /// <param name="resourceName"></param>
         public void AsResource(string resourceName)
         {
             Provider = new ResourceProvider<T>(resourceName);

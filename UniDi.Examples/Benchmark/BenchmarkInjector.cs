@@ -1,0 +1,46 @@
+﻿using UnityEngine;
+using System.Collections;
+
+namespace UniDi.Examples
+{
+    public class BenchmarkInjector : MonoBehaviour
+    {
+        private Context _context = new Context();
+
+        public int Iterations = 1000;
+
+        [Inject]
+        public TestDependency Dependency1 { get; set; }
+        [Inject]
+        public TestDependency Dependency2 { get; set; }
+        [Inject]
+        public TestDependency Dependency3 { get; set; }
+        [Inject]
+        public TestDependency Dependency4 { get; set; }
+        [Inject]
+        public TestDependency Dependency5 { get; set; }
+        [Inject]
+        public TestDependency Dependency6 { get; set; }
+
+        private void Start()
+        {
+            var watch = new System.Diagnostics.Stopwatch();
+            _context.Register<TestDependency>().AsTransient();
+            _context.Register(this);
+            watch.Start();
+            for (int i = 0; i < Iterations; i++)
+            {
+                _context.Inject();
+                Dependency1 = null;
+                Dependency2 = null;
+                Dependency3 = null;
+                Dependency4 = null;
+                Dependency5 = null;
+                Dependency6 = null;
+
+            }
+            watch.Stop();
+            Debug.Log(watch.Elapsed);
+        }
+    }
+}
