@@ -285,7 +285,7 @@ namespace UniDi
                         for (int i = 0; i < parameters.Length; i++)
                         {
                             var param = parameters[i];
-                            var attribute = param.GetCustomAttributes(typeof(InjectAttribute), false).First() as InjectAttribute;
+                            var attribute = param.GetCustomAttributes(typeof(InjectAttribute), false).FirstOrDefault() as InjectAttribute;
                             object value;
                             if (attribute != null && !string.IsNullOrEmpty(attribute.Name))
                                 value = Resolve(param.ParameterType, attribute.Name);
