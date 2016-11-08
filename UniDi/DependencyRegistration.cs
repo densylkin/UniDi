@@ -50,9 +50,9 @@ namespace UniDi
             Provider = new FactoryProvider<F>();
         }
 
-        public void AsInstance<T>(T instance) where T : class
+        public void AsInstance<K>(K instance) where K : class
         {
-            Provider = new InstanceProvider<T>((T)instance);
+            Provider = new InstanceProvider<K>((K)instance);
         }
 
         public void AsPrefab(string prefabName)

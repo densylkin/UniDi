@@ -86,8 +86,8 @@ namespace UniDi
 
         public object Create()
         {
-            var componentType = typeof(T);
-            if (componentType is Component)
+            var componentType = typeof(T); 
+            if (componentType.IsComponent())
                 return (_target ?? new GameObject(componentType + "GameObject")).AddComponent(componentType);
             else
                 throw new ArgumentException(componentType + " is not derived from Component");

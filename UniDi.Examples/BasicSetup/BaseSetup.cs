@@ -11,7 +11,7 @@ public class BaseSetup : InjectorBehaviour
     }
 }
 
-public class TestClass : IInitializable
+public class TestClass : IInitializable, ITickable
 {
     private TestDependency _testDependency;
 
@@ -29,6 +29,11 @@ public class TestClass : IInitializable
     {
         Debug.Log("initialize");
         Debug.Log(_testDependency.text);
+    }
+
+    public void Tick()
+    {
+        Debug.Log("Aatat");
     }
 }
 

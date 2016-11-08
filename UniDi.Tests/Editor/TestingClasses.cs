@@ -12,12 +12,14 @@
 
         public TestConstructorClass()
         {
+
         }
 
         [Inject]
         public TestConstructorClass(TestDependency dependency)
         {
             Dependency = dependency;
+            Dependency.ToString();
         }
     }
 

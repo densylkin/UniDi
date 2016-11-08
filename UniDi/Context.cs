@@ -1,10 +1,11 @@
-﻿using System;
-using UnityEngine;
-using System.Collections;
+﻿#if UNITY_STANDALONE || UNITY_EDITOR
+#define USE_FAST_REFLECTION
+#endif
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using UnityEngine.Networking.NetworkSystem;
 using Vexe.Runtime.Extensions;
 
 namespace UniDi
@@ -13,7 +14,9 @@ namespace UniDi
     {
         private Dictionary<Type, MemberInfo[]> _membersCache;
         private Dictionary<Type, Dictionary<string, IDependencyRegistration>> _registrations;
-        private Dictionary<Type, object> _constructedInstances; 
+        private Dictionary<Type, object> _constructedInstances;
+
+        public List<ITickable> Tickables = new List<ITickable>();
 
         public Context()
         {
@@ -232,7 +235,7 @@ namespace UniDi
                     return false;
                 else
                 {
-                    if(!_membersCache.ContainsKey(t))
+                    if (!_membersCache.ContainsKey(t))
                         _membersCache.Add(t, members);
                     return true;
                 }
@@ -263,21 +266,21 @@ namespace UniDi
                 {
                     if (member.IsProperty())
                     {
-                        var property = (PropertyInfo) member;
-                        var attribute = property.GetCustomAttributes(typeof (InjectAttribute), false).First() as InjectAttribute;
+                        var property = (PropertyInfo)member;
+                        var attribute = property.GetCustomAttributes(typeof(InjectAttribute), false).First() as InjectAttribute;
                         object value;
                         if (attribute != null && !string.IsNullOrEmpty(attribute.Name))
                             value = Resolve(property.PropertyType, attribute.Name);
                         else
                             value = Resolve(property.PropertyType);
 
-
+                        ProcessEvents(value);
                         InjectToPropery((PropertyInfo)member, value, ref injectable);
                     }
 
                     if (member.IsMethod())
                     {
-                        var method = (MethodInfo) member;
+                        var method = (MethodInfo)member;
 
                         var parameters = method.GetParameters();
                         var parametersValues = new object[parameters.Length];
@@ -294,16 +297,17 @@ namespace UniDi
 
                             parametersValues[i] = value;
                         }
-
+                        foreach (var value in parametersValues)
+                        {
+                            ProcessEvents(value);
+                        }
                         InjectToMethod(method, parametersValues, injectable);
                     }
                 }
 
-                var properties = members.Where(m => m is PropertyInfo).Cast<PropertyInfo>();
+                //var properties = members.Where(m => m is PropertyInfo).Cast<PropertyInfo>();
 
-                var initializable = injectable as IInitializable;
-                if(initializable != null)
-                    initializable.Initialize();
+                ProcessEvents(injectable);
             }
         }
 
@@ -314,29 +318,55 @@ namespace UniDi
             for (int i = 0; i < ctorParameters.Length; i++)
             {
                 var param = ctorParameters[i];
-                var attribute = param.GetCustomAttributes(typeof (InjectAttribute), false).Cast<InjectAttribute>().FirstOrDefault();
+                var attribute = param.GetCustomAttributes(typeof(InjectAttribute), false).Cast<InjectAttribute>().FirstOrDefault();
                 if (attribute != null && !string.IsNullOrEmpty(attribute.Name))
                     parametersValues[i] = Resolve(param.ParameterType, attribute.Name);
                 else
                     parametersValues[i] = Resolve(param.ParameterType);
             }
-            var del = type.DelegateForCtor(ctorParameters.Select(p => p.ParameterType).ToArray());
+
+#if USE_FAST_REFLECTION
+            var del = type. DelegateForCtor(ctorParameters.Select(p => p.ParameterType).ToArray()); 
             return del(parametersValues);
+#else
+           return ctorInfo.Invoke(parametersValues); 
+#endif
         }
 
         private void InjectToPropery(PropertyInfo property, object value, ref object injectable)
         {
+#if USE_FAST_REFLECTION
             var del = property.DelegateForSet();
             del(ref injectable, value);
+#else
+            property.SetValue(injectable, value, null);
+#endif
+
+
         }
 
         private void InjectToMethod(MethodInfo method, object[] values, object injectable)
         {
+#if USE_FAST_REFLECTION
             var del = method.DelegateForCall();
             del(injectable, values);
+#else
+            method.Invoke(injectable, values); 
+#endif
         }
 
         #endregion
+
+        private void ProcessEvents(object target)
+        {
+            var initializable = target as IInitializable;
+            if (initializable != null)
+                initializable.Initialize();
+
+            var tickable = target as ITickable;
+            if (tickable != null)
+                Tickables.Add(tickable);
+        }
 
     }
 

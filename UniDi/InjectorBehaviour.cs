@@ -19,6 +19,14 @@ namespace UniDi
             }
         }
 
+        private void Update()
+        {
+            foreach (var tickable in Context.Tickables)
+            {
+                tickable.Tick();
+            }
+        }
+
         /// <summary>
         /// Method where all dependencies should be registered
         /// </summary>
