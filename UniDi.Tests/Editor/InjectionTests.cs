@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEditor;
 using NUnit.Framework;
+using UniDi.Injection;
 using UnityEngine.Networking;
 
 namespace UniDi.Tests
@@ -12,10 +13,10 @@ namespace UniDi.Tests
         {
             var testClass = new TestClass();
             var testdpendency = new TestImplementation();
-            var context = new Context();
-            context.Register<TestImplementation>().AsInstance(testdpendency);
-            context.Register<TestClass>().AsInstance(testClass);
-            context.Inject();
+            var container = new Container();
+            container.Register<TestImplementation>().AsInstance(testdpendency);
+            container.Register<TestClass>().AsInstance(testClass);
+            new Injector(container).Inject();
             Assert.NotNull(testClass.Dependency);
             Assert.AreSame(testClass.Dependency, testdpendency);
         }
@@ -23,24 +24,24 @@ namespace UniDi.Tests
         [Test]
         public void ToConstructor()
         {
-            var context = new Context();
-            context.Register<TestConstructorClass>().AsSingle();
-            context.Register<TestDependency>().AsSingle();
+            var container = new Container();
+            container.Register<TestConstructorClass>().AsSingle();
+            container.Register<TestDependency>().AsSingle();
             Assert.DoesNotThrow(() =>
             {
-                context.Inject();
+                new Injector(container).Inject();
             });
         }
 
         [Test]
         public void ToMethod()
         {
-            var context = new Context();
+            var container = new Container();
             var testDependency = new TestDependency();
             var test = new TestMethodClass();
-            context.Register<TestDependency>().AsInstance(testDependency);
-            context.Register<TestMethodClass>().AsInstance(test);
-            context.Inject();
+            container.Register<TestDependency>().AsInstance(testDependency);
+            container.Register<TestMethodClass>().AsInstance(test);
+            new Injector(container).Inject();
             Assert.NotNull(test.Dependency);
             Assert.AreEqual(test.Dependency, testDependency);
         }

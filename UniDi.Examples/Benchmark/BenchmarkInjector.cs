@@ -5,7 +5,7 @@ namespace UniDi.Examples
 {
     public class BenchmarkInjector : MonoBehaviour
     {
-        private Context _context = new Context();
+        private Container _container = new Container();
 
         public int Iterations = 1000;
 
@@ -25,12 +25,12 @@ namespace UniDi.Examples
         private void Start()
         {
             var watch = new System.Diagnostics.Stopwatch();
-            _context.Register<TestDependency>().AsTransient();
-            _context.Register(this);
+            _container.Register<TestDependency>().AsTransient();
+            _container.Register(this);
             watch.Start();
             for (int i = 0; i < Iterations; i++)
             {
-                _context.Inject();
+                //_container.Inject();
                 Dependency1 = null;
                 Dependency2 = null;
                 Dependency3 = null;

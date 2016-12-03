@@ -9,11 +9,11 @@ namespace UniDi.Tests
         [Test]
         public void Resolve_Single()
         {
-            var context = new Context();
-            context.Register<TestClass>().AsSingle();
+            var container = new Container();
+            container.Register<TestClass>().AsSingle();
 
-            var resolvedObj1 = context.Resolve<TestClass>();
-            var resolvedObj2 = context.Resolve<TestClass>();
+            var resolvedObj1 = container.Resolve<TestClass>();
+            var resolvedObj2 = container.Resolve<TestClass>();
             
             Assert.AreSame(resolvedObj1, resolvedObj2);
         }
@@ -21,23 +21,23 @@ namespace UniDi.Tests
         [Test]
         public void Resolve_Instance()
         {
-            var context = new Context();
+            var container = new Container();
             var instance = new TestClass();
 
-            context.Register(instance);
+            container.Register(instance);
 
-            var resolvedInstance = context.Resolve<TestClass>();
+            var resolvedInstance = container.Resolve<TestClass>();
             Assert.AreSame(instance, resolvedInstance);
         }
 
         [Test]
         public void Resolve_Multi()
         {
-            var context = new Context();
-            context.Register<TestClass>().AsTransient();
+            var container = new Container();
+            container.Register<TestClass>().AsTransient();
 
-            var resolvedObj1 = context.Resolve<TestClass>();
-            var resolvedObj2 = context.Resolve<TestClass>();
+            var resolvedObj1 = container.Resolve<TestClass>();
+            var resolvedObj2 = container.Resolve<TestClass>();
 
             Assert.NotNull(resolvedObj1);
             Assert.NotNull(resolvedObj2);
@@ -47,11 +47,11 @@ namespace UniDi.Tests
         [Test]
         public void Resolve_Factory()
         {
-            var context = new Context();
-            context.Register<TestClass>().AsFactory<TestFactory>();
+            var container = new Container();
+            container.Register<TestClass>().AsFactory<TestFactory>();
 
-            var resolvedObj1 = context.Resolve<TestClass>();
-            var resolvedObj2 = context.Resolve<TestClass>();
+            var resolvedObj1 = container.Resolve<TestClass>();
+            var resolvedObj2 = container.Resolve<TestClass>();
 
             Assert.NotNull(resolvedObj1);
             Assert.NotNull(resolvedObj2);

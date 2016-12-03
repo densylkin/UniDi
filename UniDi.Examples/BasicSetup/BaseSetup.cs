@@ -1,13 +1,14 @@
 ﻿using UnityEngine;
 using System.Collections;
 using UniDi;
+using UniDi.Interfaces;
 
-public class BaseSetup : InjectorBehaviour 
+public class BaseSetup : MonoModule
 {
-    protected override void Initialize()
+    public override void SetupDependencies()
     {
-        Context.Register<TestDependency>().AsSingle();
-        Context.Register<TestClass>();
+        Container.Register<TestDependency>().AsSingle();
+        Container.Register<TestClass>();
     }
 }
 
